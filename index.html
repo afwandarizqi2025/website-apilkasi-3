@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Warkop Kita</title>
+    <!-- FontAwesome untuk Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #3d2314; /* Warna Kopi */
+            color: #fff;
+            position: fixed;
+            padding: 20px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #e2b04a;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .sidebar ul li:hover, .sidebar ul li.active {
+            background-color: #5c3821;
+        }
+
+        .sidebar ul li i {
+            margin-right: 10px;
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        /* Stat Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .card i {
+            font-size: 40px;
+            color: #3d2314;
+        }
+
+        /* Container Content (POS/Kasir) */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        /* Menu Grid */
+        .menu-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .menu-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .menu-item:hover {
+            border-color: #3d2314;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .menu-item h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .menu-item p {
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* Order Section */
+        .order-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .order-list {
+            list-style: none;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .total-price {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-checkout {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+
+        .btn-checkout:hover {
+            background-color: #219150;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h2><i class="fa-solid => fa-mug-hot"></i> Warkop Kita</h2>
+        <ul>
+            <li class="active"><i class="fa-solid fa-chart-line"></i> Dashboard</li>
+            <li><i class="fa-solid fa-utensils"></i> Menu Kasir</li>
+            <li><i class="fa-solid fa-receipt"></i> Transaksi</li>
+            <li><i class="fa-solid fa-gear"></i> Pengaturan</li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Dashboard Penjualan</h1>
+            <span>Halo, <strong>Kasir Warkop</strong></span>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="cards">
+            <div class="card">
+                <i class="fa-solid fa-wallet"></i>
+                <div>
+                    <h3>Rp <span id="total-pendapatan">0</span></h3>
+                    <p>Pendapatan Hari Ini</p>
+                </div>
+            </div>
+            <div class="card">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <div>
+                    <h3><span id="total-pesanan">0</span></h3>
+                    <p>Total Pesanan</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard POS Content -->
+        <div class="dashboard-container">
+            <!-- Menu List -->
+            <div class="menu-section">
+                <h2>Pilih Menu</h2>
+                <div class="menu-grid">
+                    <div class="menu-item" onclick="tambahPesanan('Kopi Hitam', 5000)">
+                        <h4>Kopi Hitam</h4>
+                        <p>Rp 5.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahPesanan('Es Kopi Susu', 8000)">
+                        <h4>Es Kopi Susu</h4>
+                        <p>Rp 8.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahPesanan('Teh Manis', 4000)">
+                        <h4>Teh Manis</h4>
+                        <p>Rp 4.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahPesanan('Indomie Goreng', 10000)">
+                        <h4>Indomie Goreng</h4>
+                        <p>Rp 10.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahPesanan('Indomie Kuah', 10000)">
+                        <h4>Indomie Kuah</h4>
+                        <p>Rp 10.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahPesanan('Gorengan (3pcs)', 5000)">
+                        <h4>Gorengan (3pcs)</h4>
+                        <p>Rp 5.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahPesanan('Roti Bakar', 12000)">
+                        <h4>Roti Bakar</h4>
+                        <p>Rp 12.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahPesanan('Nutrisari', 5000)">
+                        <h4>Nutrisari</h4>
+                        <p>Rp 5.000</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pesanan Aktif -->
+            <div class="order-section">
+                <div>
+                    <h2>Pesanan Aktif</h2>
+                    <ul class="order-list" id="order-list">
+                        <!-- Item pesanan akan muncul di sini via JS -->
+                    </ul>
+                </div>
+
+                <div>
+                    <div class="total-price">
+                        <span>Total:</span>
+                        <span>Rp <span id="total-harga">0</span></span>
+                    </div>
+                    <button class="btn-checkout" onclick="checkout()">Bayar / Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let pesanan = [];
+        let totalHarga = 0;
+        let totalPendapatanHariIni = 0;
+        let totalPesananHariIni = 0;
+
+        function tambahPesanan(nama, harga) {
+            pesanan.push({ nama, harga });
+            totalHarga += harga;
+            updateUI();
+        }
+
+        function updateUI() {
+            const orderListElement = document.getElementById('order-list');
+            orderListElement.innerHTML = '';
+
+            pesanan.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = 'order-item';
+                li.innerHTML = `<span>${item.nama}</span> <span>Rp ${item.harga.toLocaleString()}</span>`;
+                orderListElement.appendChild(li);
+            });
+
+            document.getElementById('total-harga').innerText = totalHarga.toLocaleString();
+        }
+
+        function checkout() {
+            if (pesanan.length === 0) {
+                alert('Belum ada pesanan yang dipilih!');
+                return;
+            }
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard & Kelola Pesanan Warkop</title>
+    <!-- FontAwesome untuk Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            height: 100vh;
+            background-color: #3d2314; /* Warna Kopi */
+            color: #fff;
+            position: fixed;
+            padding: 20px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #e2b04a;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .sidebar ul li:hover, .sidebar ul li.active {
+            background-color: #5c3821;
+        }
+
+        .sidebar ul li i {
+            margin-right: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 240px;
+            padding: 25px;
+            width: calc(100% - 240px);
+        }
+
+        .header {
+            margin-bottom: 20px;
+        }
+
+        /* Stat Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background-color: #fff;
+            padding: 18px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .card i {
+            font-size: 35px;
+            color: #3d2314;
+        }
+
+        /* Layout Main Section */
+        .pos-container {
+            display: grid;
+            grid-template-columns: 1.8fr 1.2fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Area Menu */
+        .menu-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .menu-item {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #fafafa;
+            transition: 0.2s;
+        }
+
+        .menu-item:hover {
+            border-color: #3d2314;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        }
+
+        .menu-item h4 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .menu-item p {
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        /* Area Form Pesanan / Kasir */
+        .order-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .order-list {
+            list-style: none;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+            border-top: 1px dashed #ddd;
+            border-bottom: 1px dashed #ddd;
+            padding: 10px 0;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            font-size: 14px;
+        }
+
+        .qty-btn {
+            background: #e0e0e0;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .total-price {
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-submit {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        .btn-submit:hover {
+            background-color: #219150;
+        }
+
+        /* Tabel Pesanan Aktif */
+        .orders-table-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table th, table td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        table th {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .badge-warning {
+            background-color: #ffeaa7;
+            color: #d63031;
+        }
+
+        .badge-success {
+            background-color: #55efc4;
+            color: #00b894;
+        }
+
+        .btn-status {
+            background-color: #0984e3;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-status:hover {
+            background-color: #74b9ff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2><i class="fa-solid fa-mug-hot"></i> Warkop Kita</h2>
+        <ul>
+            <li class="active"><i class="fa-solid fa-chart-line"></i> Dashboard</li>
+            <li><i class="fa-solid fa-list-check"></i> Pesanan Masuk</li>
+            <li><i class="fa-solid fa-gear"></i> Pengaturan</li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Dashboard & POS Warkop</h1>
+        </div>
+
+        <!-- Ringkasan Statistik -->
+        <div class="cards">
+            <div class="card">
+                <i class="fa-solid fa-wallet"></i>
+                <div>
+                    <h3>Rp <span id="stat-pendapatan">0</span></h3>
+                    <p>Pendapatan Hari Ini</p>
+                </div>
+            </div>
+            <div class="card">
+                <i class="fa-solid fa-bell"></i>
+                <div>
+                    <h3><span id="stat-pesanan-aktif">0</span></h3>
+                    <p>Pesanan Diproses</p>
+                </div>
+            </div>
+            <div class="card">
+                <i class="fa-solid fa-circle-check"></i>
+                <div>
+                    <h3><span id="stat-pesanan-selesai">0</span></h3>
+                    <p>Pesanan Selesai</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- POS / Buat Pesanan Baru -->
+        <div class="pos-container">
+            <!-- Grid Menu -->
+            <div class="menu-section">
+                <h3>Pilih Menu</h3>
+                <div class="menu-grid">
+                    <div class="menu-item" onclick="tambahItem('Kopi Hitam', 5000)">
+                        <h4>Kopi Hitam</h4>
+                        <p>Rp 5.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahItem('Es Kopi Susu', 8000)">
+                        <h4>Es Kopi Susu</h4>
+                        <p>Rp 8.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahItem('Teh Manis', 4000)">
+                        <h4>Teh Manis</h4>
+                        <p>Rp 4.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahItem('Indomie Goreng', 10000)">
+                        <h4>Indomie Goreng</h4>
+                        <p>Rp 10.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahItem('Indomie Kuah', 10000)">
+                        <h4>Indomie Kuah</h4>
+                        <p>Rp 10.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahItem('Gorengan (3pcs)', 5000)">
+                        <h4>Gorengan (3pcs)</h4>
+                        <p>Rp 5.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahItem('Roti Bakar', 12000)">
+                        <h4>Roti Bakar</h4>
+                        <p>Rp 12.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahItem('Nutrisari', 5000)">
+                        <h4>Nutrisari</h4>
+                        <p>Rp 5.000</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form & Cart Pesanan -->
+            <div class="order-section">
+                <h3>Form Pesanan Baru</h3>
+                <div style="margin-top: 10px;">
+                    <div class="form-group">
+                        <label>Pilih Meja / Jenis Pesanan:</label>
+                        <select id="meja-select">
+                            <option value="Meja 1">Meja 1</option>
+                            <option value="Meja 2">Meja 2</option>
+                            <option value="Meja 3">Meja 3</option>
+                            <option value="Meja 4">Meja 4</option>
+                            <option value="Takeaway (Bungkus)">Takeaway (Bungkus)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Catatan Pesanan:</label>
+                        <input type="text" id="catatan-input" placeholder="Misal: Kopi pahit, Indomie Pedas">
+                    </div>
+
+                    <ul class="order-list" id="cart-list">
+                        <!-- Item keranjang akan dirender di sini -->
+                    </ul>
+                </div>
+
+                <div>
+                    <div class="total-price">
+                        <span>Total:</span>
+                        <span>Rp <span id="cart-total">0</span></span>
+                    </div>
+                    <button class="btn-submit" onclick="buatPesanan()">Kirim Pesanan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daftar Antrean Pesanan -->
+        <div class="orders-table-section">
+            <h3>Daftar Pesanan Warkop</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Lokasi/Meja</th>
+                        <th>Detail Menu</th>
+                        <th>Catatan</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-table-body">
+                    <!-- Data pesanan masuk akan muncul di sini -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let cart = [];
+        let daftarPesanan = [];
+        let counterId = 1;
+
+        let totalPendapatan = 0;
+        let totalSelesai = 0;
+
+        // 1. Tambah item ke keranjang
+        function tambahItem(nama, harga) {
+            const itemExist = cart.find(item => item.nama === nama);
+            if (itemExist) {
+                itemExist.qty += 1;
+            } else {
+                cart.push({ nama, harga, qty: 1 });
+            }
+            renderCart();
+        }
+
+        // 2. Ubah kuantitas (+ / -)
+        function ubahQty(nama, delta) {
+            const item = cart.find(item => item.nama === nama);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) {
+                    cart = cart.filter(i => i.nama !== nama);
+                }
+            }
+            renderCart();
+        }
+
+        // 3. Render Tampilan Keranjang
+        function renderCart() {
+            const cartList = document.getElementById('cart-list');
+            cartList.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                cartList.innerHTML = '<li style="color:#888; text-align:center; padding:10px 0;">Belum ada menu dipilih</li>';
+            }
+
+            cart.forEach(item => {
+                const subtotal = item.harga * item.qty;
+                total += subtotal;
+
+                const li = document.createElement('li');
+                li.className = 'order-item';
+                li.innerHTML = `
+                    <div>
+                        <strong>${item.nama}</strong><br>
+                        <small>@ Rp ${item.harga.toLocaleString()}</small>
+                    </div>
+                    <div>
+                        <button class="qty-btn" onclick="ubahQty('${item.nama}', -1)">-</button>
+                        <span style="margin: 0 5px;">${item.qty}</span>
+                        <button class="qty-btn" onclick="ubahQty('${item.nama}', 1)">+</button>
+                    </div>
+                `;
+                cartList.appendChild(li);
+            });
+
+            document.getElementById('cart-total').innerText = total.toLocaleString();
+        }
+
+        // 4. Kirim / Buat Pesanan Baru
+        function buatPesanan() {
+            if (cart.length === 0) {
+                alert('Pilih menu terlebih dahulu!');
+                return;
+            }
+
+            const lokasi = document.getElementById('meja-select').value;
+            const catatan = document.getElementById('catatan-input').value || '-';
+            const totalHarga = cart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
+
+            // Rincian string menu
+            const rincianMenu = cart.map(i => `${i.nama} (${i.qty}x)`).join(', ');
+
+            const pesananBaru = {
+                id: '#ORD-' + counterId++,
+                lokasi: lokasi,
+                items: rincianMenu,
+                catatan: catatan,
+                total: totalHarga,
+                status: 'Diproses'
+            };
+
+            daftarPesanan.push(pesananBaru);
+            
+            // Reset keranjang & form
+            cart = [];
+            document.getElementById('catatan-input').value = '';
+            renderCart();
+            renderTablePesanan();
+            updateStatistik();
+        }
+
+        // 5. Render Tabel Pesanan
+        function renderTablePesanan() {
+            const tbody = document.getElementById('orders-table-body');
+            tbody.innerHTML = '';
+
+            if (daftarPesanan.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#888;">Belum ada pesanan aktif</td></tr>';
+                return;
+            }
+
+            daftarPesanan.forEach((order, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${order.id}</strong></td>
+                    <td>${order.lokasi}</td>
+                    <td>${order.items}</td>
+                    <td><small><i>${order.catatan}</i></small></td>
+                    <td>Rp ${order.total.toLocaleString()}</td>
+                    <td>
+                        <span class="badge ${order.status === 'Diproses' ? 'badge-warning' : 'badge-success'}">
+                            ${order.status}
+                        </span>
+                    </td>
+                    <td>
+                        ${order.status === 'Diproses' 
+                            ? `<button class="btn-status" onclick="selesaikanPesanan(${index})">Tandai Selesai</button>` 
+                            : '<i class="fa-solid fa-check" style="color:green;"></i> Done'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // 6. Selesaikan Pesanan
+        function selesaikanPesanan(index) {
+            daftarPesanan[index].status = 'Selesai';
+            totalPendapatan += daftarPesanan[index].total;
+            totalSelesai += 1;
+            
+            renderTablePesanan();
+            updateStatistik();
+        }
+
+        // 7. Update Angka Statistik Dashboard
+        function updateStatistik() {
+            const aktif = daftarPesanan.filter(o => o.status === 'Diproses').length;
+            
+            document.getElementById('stat-pendapatan').innerText = totalPendapatan.toLocaleString();
+            document.getElementById('stat-pesanan-aktif').innerText = aktif;
+            document.getElementById('stat-pesanan-selesai').innerText = totalSelesai;
+        }
+
+        // Render awal
+        renderCart();
+        renderTablePesanan();
+    </script>
+</body>
+</html>
+            // Update Statistik
+            totalPendapatanHariIni += totalHarga;
+            totalPesananHariIni += 1;
+
+            document.getElementById('total-pendapatan').innerText = totalPendapatanHariIni.toLocaleString();
+            document.getElementById('total-pesanan').innerText = totalPesananHariIni;
+
+            // Reset Pesanan Saat Ini
+            alert(`Pembayaran berhasil! Total: Rp ${totalHarga.toLocaleString()}`);
+            pesanan = [];
+            totalHarga = 0;
+            updateUI();
+        }
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard & Pembayaran Warkop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            height: 100vh;
+            background-color: #3d2314;
+            color: #fff;
+            position: fixed;
+            padding: 20px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #e2b04a;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .sidebar ul li:hover, .sidebar ul li.active {
+            background-color: #5c3821;
+        }
+
+        .sidebar ul li i {
+            margin-right: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 240px;
+            padding: 25px;
+            width: calc(100% - 240px);
+        }
+
+        .header {
+            margin-bottom: 20px;
+        }
+
+        /* Stat Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background-color: #fff;
+            padding: 18px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .card i {
+            font-size: 35px;
+            color: #3d2314;
+        }
+
+        /* Layout POS */
+        .pos-container {
+            display: grid;
+            grid-template-columns: 1.7fr 1.3fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .menu-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .menu-item {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #fafafa;
+            transition: 0.2s;
+        }
+
+        .menu-item:hover {
+            border-color: #3d2314;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        }
+
+        .menu-item h4 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .menu-item p {
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        /* Area Form & Pembayaran */
+        .order-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .order-list {
+            list-style: none;
+            max-height: 160px;
+            overflow-y: auto;
+            margin-top: 10px;
+            border-top: 1px dashed #ddd;
+            border-bottom: 1px dashed #ddd;
+            padding: 8px 0;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            font-size: 13px;
+        }
+
+        .qty-btn {
+            background: #e0e0e0;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .payment-box {
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .total-price {
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .btn-submit {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .btn-submit:hover {
+            background-color: #219150;
+        }
+
+        /* Tabel Pesanan */
+        .orders-table-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table th, table td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        table th {
+            background-color: #f8f9fa;
+        }
+
+        /* Modal Struk */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 320px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .modal-header {
+            text-align: center;
+            border-bottom: 1px dashed #000;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .modal-footer {
+            border-top: 1px dashed #000;
+            padding-top: 10px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .btn-close {
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2><i class="fa-solid fa-mug-hot"></i> Warkop Kita</h2>
+        <ul>
+            <li class="active"><i class="fa-solid fa-chart-line"></i> Dashboard</li>
+            <li><i class="fa-solid fa-receipt"></i> Transaksi</li>
+            <li><i class="fa-solid fa-gear"></i> Pengaturan</li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Dashboard & Kasir Warkop</h1>
+        </div>
+
+        <!-- Ringkasan Statistik -->
+        <div class="cards">
+            <div class="card">
+                <i class="fa-solid fa-wallet"></i>
+                <div>
+                    <h3>Rp <span id="stat-pendapatan">0</span></h3>
+                    <p>Pendapatan Hari Ini</p>
+                </div>
+            </div>
+            <div class="card">
+                <i class="fa-solid fa-circle-check"></i>
+                <div>
+                    <h3><span id="stat-pesanan-selesai">0</span></h3>
+                    <p>Transaksi Selesai</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- POS & Kasir Pembayaran -->
+        <div class="pos-container">
+            <!-- Grid Menu -->
+            <div class="menu-section">
+                <h3>Pilih Menu</h3>
+                <div class="menu-grid">
+                    <div class="menu-item" onclick="tambahItem('Kopi Hitam', 5000)">
+                        <h4>Kopi Hitam</h4>
+                        <p>Rp 5.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahItem('Es Kopi Susu', 8000)">
+                        <h4>Es Kopi Susu</h4>
+                        <p>Rp 8.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahItem('Teh Manis', 4000)">
+                        <h4>Teh Manis</h4>
+                        <p>Rp 4.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahItem('Indomie Goreng', 10000)">
+                        <h4>Indomie Goreng</h4>
+                        <p>Rp 10.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahItem('Gorengan (3pcs)', 5000)">
+                        <h4>Gorengan (3pcs)</h4>
+                        <p>Rp 5.000</p>
+                    </div>
+                    <div class="menu-item" onclick="tambahItem('Roti Bakar', 12000)">
+                        <h4>Roti Bakar</h4>
+                        <p>Rp 12.000</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Kasir & Pembayaran -->
+            <div class="order-section">
+                <h3>Kasir & Pembayaran</h3>
+                <div>
+                    <div class="form-group">
+                        <label>Pilih Meja / Pesanan:</label>
+                        <select id="meja-select">
+                            <option value="Meja 1">Meja 1</option>
+                            <option value="Meja 2">Meja 2</option>
+                            <option value="Meja 3">Meja 3</option>
+                            <option value="Takeaway (Bungkus)">Takeaway (Bungkus)</option>
+                        </select>
+                    </div>
+
+                    <ul class="order-list" id="cart-list">
+                        <!-- Item keranjang -->
+                    </ul>
+                </div>
+
+                <!-- Modul Pembayaran -->
+                <div class="payment-box">
+                    <div class="total-price">
+                        <span>Total Tagihan:</span>
+                        <span>Rp <span id="cart-total">0</span></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Metode Pembayaran:</label>
+                        <select id="metode-bayar" onchange="toggleBayarInput()">
+                            <option value="Tunai">Tunai (Cash)</option>
+                            <option value="QRIS">QRIS</option>
+                            <option value="Transfer">Transfer Bank</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="group-uang-diterima">
+                        <label>Uang Diterima (Rp):</label>
+                        <input type="number" id="uang-diterima" placeholder="0" oninput="hitungKembalian()">
+                    </div>
+
+                    <div style="font-size: 13px; font-weight: bold; margin-top: 5px;">
+                        Kembalian: Rp <span id="uang-kembalian">0</span>
+                    </div>
+                </div>
+
+                <button class="btn-submit" onclick="prosesPembayaran()">Proses & Cetak Struk</button>
+            </div>
+        </div>
+
+        <!-- Riwayat Transaksi -->
+        <div class="orders-table-section">
+            <h3>Riwayat Transaksi Pembayaran</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Struk</th>
+                        <th>Lokasi</th>
+                        <th>Rincian Menu</th>
+                        <th>Metode</th>
+                        <th>Total</th>
+                        <th>Bayar</th>
+                        <th>Kembali</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-table-body">
+                    <!-- History transaksi -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Struk Pembayaran -->
+    <div class="modal" id="modal-struk">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>WARKOP KITA</h3>
+                <small>Jl. Kopi No. 12, Jakarta</small><br>
+                <small id="struk-tanggal"></small>
+            </div>
+            <div id="struk-body" style="font-size: 12px; margin-bottom: 10px;">
+                <!-- Rincian Nota -->
+            </div>
+            <div class="modal-footer">
+                <small>Terima Kasih Atas Kunjungannya!</small>
+                <button class="btn-close" onclick="tutupStruk()">Tutup Nota</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let cart = [];
+        let riwayatTransaksi = [];
+        let counterId = 101;
+        let totalPendapatan = 0;
+        let totalSelesai = 0;
+
+        function tambahItem(nama, harga) {
+            const itemExist = cart.find(item => item.nama === nama);
+            if (itemExist) {
+                itemExist.qty += 1;
+            } else {
+                cart.push({ nama, harga, qty: 1 });
+            }
+            renderCart();
+        }
+
+        function ubahQty(nama, delta) {
+            const item = cart.find(item => item.nama === nama);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) {
+                    cart = cart.filter(i => i.nama !== nama);
+                }
+            }
+            renderCart();
+        }
+
+        function renderCart() {
+            const cartList = document.getElementById('cart-list');
+            cartList.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                cartList.innerHTML = '<li style="color:#888; text-align:center; padding:10px 0;">Belum ada item dipilih</li>';
+            }
+
+            cart.forEach(item => {
+                const subtotal = item.harga * item.qty;
+                total += subtotal;
+
+                const li = document.createElement('li');
+                li.className = 'order-item';
+                li.innerHTML = `
+                    <div>
+                        <strong>${item.nama}</strong> (${item.qty}x)
+                    </div>
+                    <div>
+                        <button class="qty-btn" onclick="ubahQty('${item.nama}', -1)">-</button>
+                        <button class="qty-btn" onclick="ubahQty('${item.nama}', 1)">+</button>
+                        <span style="margin-left:8px;">Rp ${subtotal.toLocaleString()}</span>
+                    </div>
+                `;
+                cartList.appendChild(li);
+            });
+
+            document.getElementById('cart-total').innerText = total.toLocaleString();
+            hitungKembalian();
+        }
+
+        function toggleBayarInput() {
+            const metode = document.getElementById('metode-bayar').value;
+            const groupUang = document.getElementById('group-uang-diterima');
+            if (metode === 'Tunai') {
+                groupUang.style.display = 'block';
+            } else {
+                groupUang.style.display = 'none';
+                document.getElementById('uang-diterima').value = '';
+                document.getElementById('uang-kembalian').innerText = '0';
+            }
+        }
+
+        function hitungKembalian() {
+            const total = cart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
+            const diterima = parseFloat(document.getElementById('uang-diterima').value) || 0;
+            const kembalian = diterima - total;
+            
+            const elementKembali = document.getElementById('uang-kembalian');
+            if (kembalian >= 0) {
+                elementKembali.innerText = kembalian.toLocaleString();
+                elementKembali.style.color = 'black';
+            } else {
+                elementKembali.innerText = 'Kurang Rp ' + Math.abs(kembalian).toLocaleString();
+                elementKembali.style.color = 'red';
+            }
+        }
+
+        function prosesPembayaran() {
+            if (cart.length === 0) {
+                alert('Pilih menu terlebih dahulu!');
+                return;
+            }
+
+            const total = cart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
+            const metode = document.getElementById('metode-bayar').value;
+            let diterima = parseFloat(document.getElementById('uang-diterima').value) || 0;
+
+            if (metode !== 'Tunai') {
+                diterima = total; // Pembayaran non-tunai dianggap uang pas
+            }
+
+            if (diterima < total) {
+                alert('Uang pembayaran masih kurang!');
+                return;
+            }
+
+            const kembalian = diterima - total;
+            const lokasi = document.getElementById('meja-select').value;
+            const idStruk = 'TRX-' + counterId++;
+
+            const transaksi = {
+                id: idStruk,
+                lokasi: lokasi,
+                items: [...cart],
+                total: total,
+                metode: metode,
+                diterima: diterima,
+                kembalian: kembalian
+            };
+
+            riwayatTransaksi.unshift(transaksi);
+            
+            totalPendapatan += total;
+            totalSelesai += 1;
+
+            tampilkanStruk(transaksi);
+            updateStatistik();
+            
+            // Reset keranjang
+            cart = [];
+            document.getElementById('uang-diterima').value = '';
+            renderCart();
+            renderTableRiwayat();
+        }
+
+        function renderTableRiwayat() {
+            const tbody = document.getElementById('orders-table-body');
+            tbody.innerHTML = '';
+
+            riwayatTransaksi.forEach(trx => {
+                const rincian = trx.items.map(i => `${i.nama} x${i.qty}`).join(', ');
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${trx.id}</strong></td>
+                    <td>${trx.lokasi}</td>
+                    <td>${rincian}</td>
+                    <td><span class="badge">${trx.metode}</span></td>
+                    <td>Rp ${trx.total.toLocaleString()}</td>
+                    <td>Rp ${trx.diterima.toLocaleString()}</td>
+                    <td>Rp ${trx.kembalian.toLocaleString()}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function tampilkanStruk(trx) {
+            document.getElementById('struk-tanggal').innerText = new Date().toLocaleString('id-ID');
+            const body = document.getElementById('struk-body');
+            
+            let htmlItems = '<p><strong>ID: ' + trx.id + '</strong> (' + trx.lokasi + ')</p><hr style="border-top:1px dashed #000; margin:5px 0;">';
+            trx.items.forEach(i => {
+                htmlItems += `<div style="display:flex; justify-between">${i.nama} x${i.qty} <span>Rp ${(i.harga * i.qty).toLocaleString()}</span></div>`;
+            });
+            
+            htmlItems += `<hr style="border-top:1px dashed #000; margin:5px 0;">
+                <div style="display:flex; justify-between">Total: <strong>Rp ${trx.total.toLocaleString()}</strong></div>
+                <div style="display:flex; justify-between">Metode: <span>${trx.metode}</span></div>
+                <div style="display:flex; justify-between">Bayar: <span>Rp ${trx.diterima.toLocaleString()}</span></div>
+                <div style="display:flex; justify-between">Kembali: <span>Rp ${trx.kembalian.toLocaleString()}</span></div>
+            `;
+            
+            body.innerHTML = htmlItems;
+            document.getElementById('modal-struk').style.display = 'flex';
+        }
+
+        function tutupStruk() {
+            document.getElementById('modal-struk').style.display = 'none';
+        }
+
+        function updateStatistik() {
+            document.getElementById('stat-pendapatan').innerText = totalPendapatan.toLocaleString();
+            document.getElementById('stat-pesanan-selesai').innerText = totalSelesai;
+        }
+
+        renderCart();
+    </script>
+</body>
+</html>
